@@ -7,6 +7,8 @@ android {
     namespace = "com.tituya.facerec"
     compileSdk = 34
 
+    sourceSets["main"].jniLibs.srcDirs("src/main/jniLibs")
+
     defaultConfig {
         applicationId = "com.tituya.facerec"
         minSdk = 24
@@ -34,7 +36,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
-        compose = true
+        viewBinding = true
     }
 }
 
@@ -46,12 +48,6 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
@@ -62,8 +58,4 @@ dependencies {
     implementation("com.google.mlkit:face-detection:16.1.7")
     implementation("com.facebook.soloader:soloader:0.10.5")
     implementation("com.facebook.fbjni:fbjni:0.5.1")
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 }
