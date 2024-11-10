@@ -32,7 +32,7 @@ class MainFaceAdapter(private val dataSet: MutableList<String>) :
     override fun getItemCount() = dataSet.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.imageView.setImageResource(R.drawable.benj)
+//        holder.imageView.setImageResource(R.drawable.benj)
     }
 
     fun addFace(face: String) {
