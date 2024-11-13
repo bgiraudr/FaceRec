@@ -1,33 +1,44 @@
 package com.tituya.facerec
 
 import android.animation.Animator
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.carousel.CarouselLayoutManager
-import com.google.android.material.carousel.CarouselSnapHelper
-import com.google.android.material.carousel.HeroCarouselStrategy
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
 import com.tituya.facerec.adapter.MainFaceAdapter
 import com.tituya.facerec.ui.intent.FindFragment
 import com.tituya.facerec.ui.intent.MainFragment
+import com.tituya.facerec.utils.FaceUtils
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val adapter = MainFaceAdapter(mutableListOf())
-
+        val adapter = MainFaceAdapter()
         val carousel = findViewById<RecyclerView>(R.id.carousel_recycler_view)
-        val snapHelper = CarouselSnapHelper()
-        snapHelper.attachToRecyclerView(carousel)
-        carousel.layoutManager = CarouselLayoutManager(HeroCarouselStrategy())
+
+        carousel.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
         carousel.adapter = adapter
+        val pickMultipleMedia =
+            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+                if (uris.isNotEmpty()) {
+                    for (uri in uris) {
+                        FaceUtils.detectFaces(this, uri, onFaceDetected = { bounds ->
+                            adapter.addFaceWithBounds(this, uri, bounds)
+                        })
+                    }
+                }
+            }
 
         findViewById<NavigationBarView>(R.id.bottom_navigation).setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -47,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<ExtendedFloatingActionButton>(R.id.add_face_fab).setOnClickListener { showMenu() }
         findViewById<FloatingActionButton>(R.id.fab_import).setOnClickListener {
-
+            pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
