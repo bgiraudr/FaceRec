@@ -10,6 +10,7 @@ class OverlayRectangles (
     private val originalSize: Pair<Int, Int>,
     private val boundingFaces: MutableList<List<Int>>
 ) : BitmapTransformation() {
+    lateinit var originalBmp : Bitmap
     val scaledBoundingFaces: MutableList<Rect> = mutableListOf()
 
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {
@@ -22,19 +23,20 @@ class OverlayRectangles (
         outWidth: Int,
         outHeight: Int
     ): Bitmap {
+        originalBmp = Bitmap.createBitmap(toTransform)
         val bmp = Bitmap.createBitmap(toTransform)
         val canvas = Canvas(bmp).apply { drawBitmap(toTransform, 0f, 0f, null) }
         val paint = Paint().apply {
-            style = Paint.Style.STROKE
-            strokeWidth = 10f
+            style = Paint.Style.FILL
+//            strokeWidth = 10f
         }
 
         // Scale the bounding boxes to the new image size
         val scale = toTransform.width.coerceAtLeast(toTransform.height).toFloat() / originalSize.second
 
         boundingFaces.forEach { rect ->
-            paint.color = 0xFF0000
-            paint.alpha = 120
+            paint.color = 0xFFFFFF
+            paint.alpha = 100
             val adjustedRect = Rect(
                 (rect[0] * scale).toInt(),
                 (rect[1] * scale).toInt(),

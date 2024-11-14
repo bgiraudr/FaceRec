@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -53,7 +54,6 @@ class MainFaceAdapter(private val sharedViewModel: SharedViewModel) :
         private fun onClick(v: View?) {
             val gestureDetector = GestureDetector(v?.context, object : GestureDetector.SimpleOnGestureListener() {
                 override fun onLongPress(e: MotionEvent) {
-                    println(overlayRectangles.scaledBoundingFaces)
                     if(!::overlayRectangles.isInitialized) return
 
                     val x = e.x.toInt()
@@ -61,7 +61,7 @@ class MainFaceAdapter(private val sharedViewModel: SharedViewModel) :
 
                     for(rect: Rect in overlayRectangles.scaledBoundingFaces) {
                         if(x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                            sharedViewModel.faceSelected(Bitmap.createBitmap(imageView.drawable.toBitmap(), rect.left, rect.top, rect.width(), rect.height()))
+                            sharedViewModel.faceSelected(Bitmap.createBitmap(overlayRectangles.originalBmp, rect.left, rect.top, rect.width(), rect.height()))
                             vibrate(v?.context!!)
                             break
                         }
@@ -69,7 +69,8 @@ class MainFaceAdapter(private val sharedViewModel: SharedViewModel) :
                 }
 
                 override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                    return false
+                    Toast.makeText(v?.context, "Hold click to select this face", Toast.LENGTH_SHORT).show()
+                    return true
                 }
             })
 

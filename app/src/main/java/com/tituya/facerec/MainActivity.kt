@@ -53,13 +53,19 @@ class MainActivity : AppCompatActivity() {
         findViewById<NavigationBarView>(R.id.bottom_navigation).setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.item_1 -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.navigationHost, MainFragment()).commit()
-                    findViewById<TextView>(R.id.page_title).text = "Compare two faces"
+                    if (supportFragmentManager.findFragmentById(R.id.navigationHost) !is MainFragment) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.navigationHost, MainFragment()).commit()
+                        findViewById<TextView>(R.id.page_title).text = "Compare two faces"
+                    }
                     true
                 }
                 R.id.item_2 -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.navigationHost, FindFragment()).commit()
-                    findViewById<TextView>(R.id.page_title).text = "Find the person"
+                    if (supportFragmentManager.findFragmentById(R.id.navigationHost) !is FindFragment) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.navigationHost, FindFragment()).commit()
+                        findViewById<TextView>(R.id.page_title).text = "Find the person"
+                    }
                     true
                 }
                 else -> false
