@@ -5,10 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
+import com.tituya.facerec.R
+import com.tituya.facerec.adapter.SharedViewModel
 import com.tituya.facerec.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -16,6 +21,15 @@ class MainFragment : Fragment() {
     ): View? {
         binding = FragmentMainBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        sharedViewModel.selectedData.observe(viewLifecycleOwner, {
+            Glide.with(this)
+                .load(it)
+                .placeholder(R.drawable.round)
+                .circleCrop()
+                .into(binding.face1)
+        })
+
         return view
     }
 }

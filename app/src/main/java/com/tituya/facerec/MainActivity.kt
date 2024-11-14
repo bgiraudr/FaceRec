@@ -1,30 +1,40 @@
 package com.tituya.facerec
 
 import android.animation.Animator
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationBarView
 import com.tituya.facerec.adapter.MainFaceAdapter
+import com.tituya.facerec.adapter.SharedViewModel
 import com.tituya.facerec.ui.intent.FindFragment
 import com.tituya.facerec.ui.intent.MainFragment
 import com.tituya.facerec.utils.FaceUtils
 
 
 class MainActivity : AppCompatActivity() {
+    private val sharedViewModel: SharedViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val adapter = MainFaceAdapter()
+        //TODO REMOVE DEBUG
+        Glide.get(this).clearMemory()
+        Thread {
+            Glide.get(this).clearDiskCache()
+        }.start()
+
+        val adapter = MainFaceAdapter(sharedViewModel)
         val carousel = findViewById<RecyclerView>(R.id.carousel_recycler_view)
 
         carousel.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false)
