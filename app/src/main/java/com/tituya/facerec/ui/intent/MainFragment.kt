@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import com.bumptech.glide.Glide
 import com.tituya.facerec.R
 import com.tituya.facerec.adapter.SharedViewModel
@@ -27,25 +28,27 @@ class MainFragment : Fragment() {
         binding = FragmentMainBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        sharedViewModel.selectedData.observe(viewLifecycleOwner) {
-            if (firstFaceSelected != null && secondFaceSelected != null) {
-                Toast.makeText(context, "Both faces are already selected", Toast.LENGTH_SHORT).show()
-            } else {
-                Glide.with(this)
-                    .load(it)
-                    .placeholder(R.drawable.person_placeholder)
-                    .circleCrop()
-                    .into(if (firstFaceSelected == null) binding.face1 else binding.face2)
-                if (firstFaceSelected == null) {
+        observeFaceSelection(
+            sharedViewModel.firstFace,
+            {
+                if(firstFaceSelected != null) false
+                else {
                     firstFaceSelected = it
-                } else {
+                    true
+                }
+            },
+            binding.face1)
+
+        observeFaceSelection(
+            sharedViewModel.secondFace,
+            {
+                if(secondFaceSelected != null) false
+                else {
                     secondFaceSelected = it
+                    true
                 }
-                if(firstFaceSelected != null && secondFaceSelected != null) {
-                    binding.compareFaces.isEnabled = true
-                }
-            }
-        }
+            },
+            binding.face2)
 
         faceDeselected(binding.face1) {
             firstFaceSelected = null
@@ -55,6 +58,7 @@ class MainFragment : Fragment() {
 
         faceDeselected(binding.face2) {
             secondFaceSelected = null
+            sharedViewModel.secondFaceDeselected()
             binding.compareFaces.isEnabled = false
         }
 
@@ -74,6 +78,23 @@ class MainFragment : Fragment() {
                 .load(R.drawable.person_placeholder)
                 .circleCrop()
                 .into(imageView)
+        }
+    }
+
+    private fun observeFaceSelection(liveData: LiveData<Bitmap?>, onFaceSelected: (Bitmap?) -> Boolean, imageView: ImageView) {
+        liveData.observe(viewLifecycleOwner) {
+            if (onFaceSelected(it)) {
+                Glide.with(this)
+                    .load(it)
+                    .placeholder(R.drawable.person_placeholder)
+                    .circleCrop()
+                    .into(imageView)
+            } else {
+                Toast.makeText(context, "Face is already selected", Toast.LENGTH_SHORT).show()
+            }
+            if(firstFaceSelected != null && secondFaceSelected != null) {
+                binding.compareFaces.isEnabled = true
+            }
         }
     }
 }

@@ -25,7 +25,7 @@ class FindFragment : Fragment() {
         binding = FragmentFindBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        sharedViewModel.selectedData.observe(viewLifecycleOwner, {
+        sharedViewModel.firstFace.observe(viewLifecycleOwner, {
             if (firstFaceSelected != null) {
                  Toast.makeText(context, "Face is already selected", Toast.LENGTH_SHORT).show()
             } else {

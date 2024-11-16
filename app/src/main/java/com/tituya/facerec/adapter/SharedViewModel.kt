@@ -6,15 +6,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class SharedViewModel : ViewModel() {
-    private val _selectedData = MutableLiveData<Bitmap?>()
-    val selectedData: LiveData<Bitmap?> get() = _selectedData
+    private val _firstFace = MutableLiveData<Bitmap?>()
+    private val _secondFace = MutableLiveData<Bitmap?>()
+    val firstFace: LiveData<Bitmap?> get() = _firstFace
+    val secondFace: LiveData<Bitmap?> get() = _secondFace
 
     fun faceSelected(bmp: Bitmap) {
-        _selectedData.value = bmp
+        if(_firstFace.value == null) {
+            _firstFace.value = bmp
+        } else {
+            _secondFace.value = bmp
+        }
     }
 
-    // first face is shared between fragments, so we need to clear it when it's deselected in one of them
     fun firstFaceDeselected() {
-        _selectedData.value = null
+        _firstFace.value = null
+    }
+
+    fun secondFaceDeselected() {
+        _secondFace.value = null
     }
 }
