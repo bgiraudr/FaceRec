@@ -97,6 +97,7 @@
         android:layout_margin="5dp">
 
         <TextView
+            android:id="@+id/similarity_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/left_corner_round"
@@ -110,6 +111,7 @@
             android:layout_weight="1"/>
 
         <TextView
+            android:id="@+id/similarity_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/right_corner_round"

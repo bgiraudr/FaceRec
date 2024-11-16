@@ -76,6 +76,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.fab_import).setOnClickListener {
             pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
+        findViewById<FloatingActionButton>(R.id.fab_camera).setOnClickListener( {
+            // open camera
+        })
     }
 
     private fun showMenu() {
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateFab(fab: FloatingActionButton, translationY: Float, translationX: Float, duration: Long) {
-        var state = fab.visibility == View.GONE
+        val state = fab.visibility == View.GONE
         fab.animate().translationY(if(state) translationY else 0f).translationX(if(state) translationX else 0f).alpha(if(state) 1f else 0f).setDuration(duration).setListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 if(state) fab.visibility = View.VISIBLE

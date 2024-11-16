@@ -2,18 +2,19 @@ package com.tituya.facerec.ui.intent
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import com.bumptech.glide.Glide
 import com.tituya.facerec.R
 import com.tituya.facerec.adapter.SharedViewModel
 import com.tituya.facerec.databinding.FragmentMainBinding
+import com.tituya.facerec.utils.FaceUtils
 
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
@@ -64,7 +65,15 @@ class MainFragment : Fragment() {
 
         binding.compareFaces.setOnClickListener {
             if(firstFaceSelected != null && secondFaceSelected != null) {
-                // todo compare faces
+                val first = FaceUtils.resizeBitmap(firstFaceSelected!!, 160, 160)
+                val snd = FaceUtils.resizeBitmap(secondFaceSelected!!, 160, 160)
+                val firstEmbedding = FaceUtils.computeEmbedding(context, first)
+                val secondEmbedding = FaceUtils.computeEmbedding(context, snd)
+                if(firstEmbedding != null && secondEmbedding != null) {
+                    val distance = FaceUtils.cosineDistance(firstEmbedding, secondEmbedding)
+                    binding.similarityValue.text = "${"%.2f".format(distance)}"
+                    binding.similarityText.text = if(distance > 0.6) "Similar" else "Not similar"
+                }
             }
         }
 
