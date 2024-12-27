@@ -8,5 +8,14 @@
         android:id="@+id/mainFragment"
         android:name="com.tituya.facerec.ui.intent.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_manageFacesActivity"
+            app:destination="@id/manageFacesActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/manageFacesActivity"
+        android:name="com.tituya.facerec.ManageFacesActivity"
+        android:label="activity_manage_faces"
+        tools:layout="@layout/activity_manage_faces" />
 </navigation>

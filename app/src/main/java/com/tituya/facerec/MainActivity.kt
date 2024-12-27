@@ -1,9 +1,14 @@
 package com.tituya.facerec
 
 import android.animation.Animator
+import android.content.ContentValues
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -23,6 +28,8 @@ import com.tituya.facerec.utils.FaceUtils
 
 class MainActivity : AppCompatActivity() {
     private val sharedViewModel: SharedViewModel by viewModels()
+    private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,13 +79,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                imageUri?.let { onImageCaptured(it, adapter) }
+            } else {
+                Toast.makeText(this, "Unable to capture the picture.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         findViewById<ExtendedFloatingActionButton>(R.id.add_face_fab).setOnClickListener { showMenu() }
         findViewById<FloatingActionButton>(R.id.fab_import).setOnClickListener {
             pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
-        findViewById<FloatingActionButton>(R.id.fab_camera).setOnClickListener( {
-            // open camera
-        })
+        findViewById<FloatingActionButton>(R.id.fab_camera).setOnClickListener {
+            if (checkSelfPermission(android.Manifest.permission.CAMERA) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.CAMERA), 1)
+            } else {
+                imageUri = createImageUri()
+                imageUri?.let {
+                    takePictureLauncher.launch(it)
+                } ?: run {
+                    Toast.makeText(this, "Unable to create the URI", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun showMenu() {
@@ -100,5 +124,21 @@ class MainActivity : AppCompatActivity() {
             override fun onAnimationCancel(animation: Animator) {}
             override fun onAnimationRepeat(animation: Animator) {}
         }).start()
+    }
+
+    private fun createImageUri(): Uri? {
+        val contentResolver = contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.jpg")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MyApp")
+        }
+        return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+    }
+
+    private fun onImageCaptured(uri: Uri, adapter: MainFaceAdapter) {
+        FaceUtils.detectFaces(this, uri, onFaceDetected = { bounds ->
+            adapter.addFaceWithBounds(this, uri, bounds)
+        })
     }
 }
