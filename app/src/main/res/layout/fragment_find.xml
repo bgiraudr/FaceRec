@@ -61,12 +61,14 @@
             />
 
         <Button
+            android:id="@+id/find_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Find"
             android:backgroundTint="@color/button_color"
             android:textColor="?attr/colorOnPrimaryContainer"
             android:layout_gravity="center"
+            android:enabled="false"
             android:layout_weight="8"
             />
     </LinearLayout>
@@ -86,6 +88,7 @@
         android:layout_margin="5dp"/>
 
     <LinearLayout
+        android:id="@+id/similarity_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -95,6 +98,7 @@
         android:layout_margin="5dp">
 
         <TextView
+            android:id="@+id/personName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/left_corner_round"
@@ -108,6 +112,7 @@
             android:layout_weight="1"/>
 
         <TextView
+            android:id="@+id/personNameValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/right_corner_round"
