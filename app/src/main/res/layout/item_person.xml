@@ -19,7 +19,14 @@
             android:textColor="?attr/colorOnSurface"
             android:text="Person Name"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="invisible"/>
 
         <View
             android:layout_width="0dp"
@@ -27,19 +34,20 @@
             android:layout_weight="1" />
 
         <ImageView
-            android:id="@+id/addImageButton"
+            android:id="@+id/addFaceButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/baseline_add_24"
             app:tint="?attr/colorOnSurface"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="16dp" />
 
         <ImageView
             android:id="@+id/deleteButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
             app:tint="?attr/colorOnSurface"
-            android:src="@drawable/baseline_add_24" />
+            android:src="@drawable/baseline_delete_24" />
     </LinearLayout>
 
     <HorizontalScrollView
