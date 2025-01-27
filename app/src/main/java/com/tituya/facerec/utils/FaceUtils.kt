@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.util.Log
 import com.google.mlkit.vision.common.InputImage
@@ -117,5 +119,74 @@ class FaceUtils {
             }
             return file.absolutePath
         }
+
+        fun fixImageOrientation(uri: Uri, context: Context): Bitmap {
+            val inputStream = context.contentResolver.openInputStream(uri)
+
+            // Lire les informations EXIF de l'image
+            val exif = ExifInterface(inputStream!!)
+
+            // Réinitialiser le InputStream pour décoder l'image
+            inputStream.close() // Fermer le flux actuel
+            val newInputStream = context.contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(newInputStream)
+            newInputStream!!.close()
+
+            // Obtenir l'orientation EXIF
+            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+            // Appliquer la rotation ou la transformation si nécessaire
+            val matrix = Matrix()
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+                ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            }
+
+            // Retourner le bitmap corrigé si une transformation a été appliquée
+            return if (matrix.isIdentity) {
+                bitmap
+            } else {
+                Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            }
+        }
+
+        fun cropImageToFace(context: Context, uri: Uri, bounds: MutableList<List<Int>>): List<Bitmap> {
+            val ret = mutableListOf<Bitmap>()
+            for (i in bounds) {
+                val left = i[0]
+                val top = i[1]
+                val right = i[2]
+                val bottom = i[3]
+
+                if(left < 0 || top < 0 || right < 0 || bottom < 0) continue
+                ret.add(resizeBitmap(Bitmap.createBitmap(fixImageOrientation(uri, context), left, top, right - left, bottom - top), 160, 160))
+            }
+            return ret
+        }
+
+        fun calculateAverageEmbedding(embeddings: List<FloatArray>): FloatArray {
+            if (embeddings.isEmpty()) {
+                throw IllegalArgumentException("La liste des embeddings est vide.")
+            }
+
+            val embeddingSize = embeddings[0].size
+            val avgEmbedding = FloatArray(embeddingSize) { 0f }
+
+            for (embedding in embeddings) {
+                for (i in embedding.indices) {
+                    avgEmbedding[i] += embedding[i]
+                }
+            }
+
+            for (i in avgEmbedding.indices) {
+                avgEmbedding[i] = avgEmbedding[i] / embeddings.size
+            }
+
+            return avgEmbedding
+        }
+
     }
 }

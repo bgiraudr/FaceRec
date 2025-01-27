@@ -53,8 +53,8 @@ class MainFaceAdapter(private val sharedViewModel: SharedViewModel) :
 
         private fun onClick(v: View?) {
             val gestureDetector = GestureDetector(v?.context, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onLongPress(e: MotionEvent) {
-                    if(!::overlayRectangles.isInitialized) return
+                override fun onSingleTapConfirmed(e: MotionEvent):Boolean {
+                    if(!::overlayRectangles.isInitialized) return false
 
                     val x = e.x.toInt()
                     val y = e.y.toInt()
@@ -66,11 +66,11 @@ class MainFaceAdapter(private val sharedViewModel: SharedViewModel) :
                             break
                         }
                     }
+                    return true
                 }
 
-                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                override fun onLongPress(e: MotionEvent) {
                     Toast.makeText(v?.context, "Hold click to select this face", Toast.LENGTH_SHORT).show()
-                    return true
                 }
             })
 

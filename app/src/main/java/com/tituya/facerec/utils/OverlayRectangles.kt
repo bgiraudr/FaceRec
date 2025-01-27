@@ -52,7 +52,6 @@ class OverlayRectangles (
 
             scaledBoundingFaces.add(adjustedRect)
             canvas.drawRect(adjustedRect, paint)
-
         }
 
         return bmp

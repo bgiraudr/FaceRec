@@ -78,7 +78,7 @@
         app:tint="?attr/colorPrimaryContainer"
         app:layout_constraintBottom_toBottomOf="@id/add_face_fab"
         app:layout_constraintEnd_toEndOf="@id/add_face_fab"
-        app:srcCompat="@drawable/baseline_person_search_24"/>
+        app:srcCompat="@drawable/baseline_photo_library_24"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_camera"
@@ -90,6 +90,6 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/add_face_fab"
         app:layout_constraintEnd_toEndOf="@id/add_face_fab"
-        app:srcCompat="@drawable/baseline_person_search_24"/>
+        app:srcCompat="@drawable/baseline_add_a_photo_24"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
