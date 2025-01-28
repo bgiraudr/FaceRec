@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private var imageUri: Uri? = null
+    private var isMenuOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.navigationHost, MainFragment()).commit()
                         findViewById<TextView>(R.id.page_title).text = "Compare two faces"
+                        if(isMenuOpen) toggleMenu()
                     }
                     true
                 }
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.navigationHost, FindFragment()).commit()
                         findViewById<TextView>(R.id.page_title).text = "Find the person"
+                        if(isMenuOpen) toggleMenu()
                     }
                     true
                 }
@@ -87,9 +90,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<ExtendedFloatingActionButton>(R.id.add_face_fab).setOnClickListener { showMenu() }
+        findViewById<ExtendedFloatingActionButton>(R.id.add_face_fab).setOnClickListener { toggleMenu() }
         findViewById<FloatingActionButton>(R.id.fab_import).setOnClickListener {
             pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+//                startActivity(Intent(this, TestActivity::class.java))
         }
         findViewById<FloatingActionButton>(R.id.fab_camera).setOnClickListener {
             if (checkSelfPermission(android.Manifest.permission.CAMERA) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -105,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showMenu() {
+    private fun toggleMenu() {
         val fabCamera = findViewById<FloatingActionButton>(R.id.fab_camera)
         val fabImport = findViewById<FloatingActionButton>(R.id.fab_import)
         animateFab(fabCamera, -175f, 0f, 200)
@@ -113,13 +117,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateFab(fab: FloatingActionButton, translationY: Float, translationX: Float, duration: Long) {
-        val state = fab.visibility == View.GONE
-        fab.animate().translationY(if(state) translationY else 0f).translationX(if(state) translationX else 0f).alpha(if(state) 1f else 0f).setDuration(duration).setListener(object : Animator.AnimatorListener {
+        isMenuOpen = fab.visibility == View.GONE
+        fab.animate().translationY(if(isMenuOpen) translationY else 0f).translationX(if(isMenuOpen) translationX else 0f).alpha(if(isMenuOpen) 1f else 0f).setDuration(duration).setListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
-                if(state) fab.visibility = View.VISIBLE
+                if(isMenuOpen) fab.visibility = View.VISIBLE
             }
             override fun onAnimationEnd(animation: Animator) {
-                if(!state) fab.visibility = View.GONE
+                if(!isMenuOpen) fab.visibility = View.GONE
             }
             override fun onAnimationCancel(animation: Animator) {}
             override fun onAnimationRepeat(animation: Animator) {}

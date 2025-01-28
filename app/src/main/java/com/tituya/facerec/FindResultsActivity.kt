@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.tituya.facerec.adapter.MatchingResultAdapter
-import com.tituya.facerec.data.model.Face
 import com.tituya.facerec.data.model.PairResults
 import com.tituya.facerec.databinding.ActivityFindResultsBinding
 
@@ -31,7 +30,7 @@ class FindResultsActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = MatchingResultAdapter(matches.sortedBy { it.score }.reversed())
 
-        val count = matches.count { it.score > 0.5 }
+        val count = matches.count { it.score > 0.52 }
         Glide.with(this).load(bmp).into(binding.faceToFind)
         binding.faceToFindText.text = "Found $count similar out of ${matches.size} faces"
     }

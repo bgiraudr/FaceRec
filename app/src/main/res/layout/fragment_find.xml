@@ -10,7 +10,7 @@
     app:layout_constraintTop_toTopOf="parent"
     android:background="@drawable/top_corner_round"
     android:backgroundTint="?attr/colorSurfaceContainer"
-    android:padding="10dp">
+    android:padding="30px">
 
     <TextView
         android:id="@+id/selected_faces"

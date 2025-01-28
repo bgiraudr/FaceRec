@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
@@ -15,7 +16,6 @@ import com.tituya.facerec.FindResultsActivity
 import com.tituya.facerec.ManageFacesActivity
 import com.tituya.facerec.R
 import com.tituya.facerec.adapter.SharedViewModel
-import com.tituya.facerec.data.model.Face
 import com.tituya.facerec.data.model.PairResults
 import com.tituya.facerec.data.model.Person
 import com.tituya.facerec.data.room.FaceDAO
@@ -91,18 +91,23 @@ class FindFragment : Fragment() {
                         // Calcul de la distance pour chaque visage
                         val sortedMatches = arrayListOf<PairResults>()
                         for (person in persons) {
-//                            val avgEmbd = FaceUtils.calculateAverageEmbedding(person.toModel().faces.map { it.embeddings })
+                            val avgEmbd = FaceUtils.calculateAverageEmbedding(person.toModel().faces.map { it.embeddings })
                             for (face in person.faces) {
                                 val distance = FaceUtils.cosineDistance(firstEmbedding, face.toModel().embeddings)
                                 sortedMatches.add(PairResults(face.picturePath, distance))
-                                if (distance > bestDistance) {
-                                    bestDistance = distance
-                                    bestPerson = person.toModel()
-                                }
+//                                if (distance > bestDistance) {
+//                                    bestDistance = distance
+//                                    bestPerson = person.toModel()
+//                                }
+                            }
+                            val meanDistance = FaceUtils.cosineDistance(firstEmbedding, avgEmbd)
+                            if (meanDistance > bestDistance) {
+                                bestDistance = meanDistance
+                                bestPerson = person.toModel()
                             }
                         }
 
-                        val stream: ByteArrayOutputStream = ByteArrayOutputStream()
+                        val stream = ByteArrayOutputStream()
                         first.compress(Bitmap.CompressFormat.PNG, 100, stream)
                         intentMatch = Intent(context, FindResultsActivity::class.java).apply {
                             putParcelableArrayListExtra("matches", sortedMatches)
@@ -111,13 +116,16 @@ class FindFragment : Fragment() {
 
                         // Mise à jour de l'interface utilisateur
                         withContext(Dispatchers.Main) {
-                            if (bestPerson != null && bestDistance > 0.5) {
-                                // Afficher la personne la plus proche (par exemple dans un TextView)
+                            if(bestPerson != null) {
                                 binding.personNameValue.text = String.format("%.2f%%", bestDistance * 100.0f)
                                 binding.personName.text = bestPerson.name
+                            }
+                            if (bestDistance > 0.52) {
+                                binding.personNameValue.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.green)
+                            } else if(bestDistance > 0){
+                                binding.personNameValue.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.yellow)
                             } else {
-                                binding.personNameValue.text = "No match found"
-                                binding.personName.text = ""
+                                binding.personNameValue.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.red)
                             }
                         }
                     }

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -71,8 +72,12 @@ class MainFragment : Fragment() {
                 val secondEmbedding = FaceUtils.computeEmbedding(context, snd)
                 if(firstEmbedding != null && secondEmbedding != null) {
                     val distance = FaceUtils.cosineDistance(firstEmbedding, secondEmbedding)
-                    binding.similarityValue.text = "${"%.2f".format(distance)}"
-                    binding.similarityText.text = if(distance > 0.6) "Similar" else "Not similar"
+                    binding.similarity.text = "Similarity: ${"%.2f".format(distance)}"
+                    val layoutParam = binding.similarityIndicator.layoutParams as ConstraintLayout.LayoutParams
+                    val screenWidth = resources.displayMetrics.widthPixels // Largeur de l'écran
+                    layoutParam.setMargins((((screenWidth-90)/2)+((screenWidth-90)/2)*distance).toInt(), 0, 0, 0)
+                    binding.similarityIndicator.layoutParams = layoutParam
+                    binding.similarityIndicatorImage.visibility = View.VISIBLE
                 }
             }
         }
